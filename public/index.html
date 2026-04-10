@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Releases Subscription</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
+      input { width: 100%; margin: 8px 0; padding: 8px; }
+      button { margin-top: 8px; padding: 10px 14px; }
+      .msg { margin-top: 12px; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>Підписка на релізи GitHub</h1>
+    <input id="email" placeholder="Email" />
+    <input id="repo" placeholder="owner/repo, напр. golang/go" />
+    <input id="apiKey" placeholder="API key (x-api-key)" />
+    <button id="subscribe">Підписатися</button>
+    <p class="msg" id="message"></p>
+
+    <script>
+      const message = document.getElementById("message");
+      document.getElementById("subscribe").addEventListener("click", async () => {
+        message.textContent = "Відправка...";
+        const email = document.getElementById("email").value.trim();
+        const repository = document.getElementById("repo").value.trim();
+        const apiKey = document.getElementById("apiKey").value.trim();
+
+        try {
+          const response = await fetch("/subscriptions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": apiKey
+            },
+            body: JSON.stringify({ email, repository })
+          });
+          const payload = response.status === 204 ? {} : await response.json();
+          if (!response.ok) {
+            throw new Error(payload.message || "Request failed");
+          }
+          message.textContent = "Підписка успішно створена.";
+        } catch (error) {
+          message.textContent = `Помилка: ${error.message}`;
+        }
+      });
+    </script>
+  </body>
+</html>

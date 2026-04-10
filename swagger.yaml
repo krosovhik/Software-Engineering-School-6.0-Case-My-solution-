@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: GitHub Releases Subscription API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Service is healthy
+  /subscriptions:
+    post:
+      summary: Create subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          description: Bad request
+        "404":
+          description: Repository not found
+        "429":
+          description: GitHub API rate limit exceeded
+    delete:
+      summary: Disable subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionRequest"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Subscription not found
+    get:
+      summary: List subscriptions by email
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Subscription"
+        "400":
+          description: Bad request
+  /scanner/run:
+    post:
+      summary: Trigger scanner manually
+      responses:
+        "204":
+          description: Completed
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      responses:
+        "200":
+          description: Metrics output
+components:
+  schemas:
+    SubscriptionRequest:
+      type: object
+      required:
+        - email
+        - repository
+      properties:
+        email:
+          type: string
+          format: email
+        repository:
+          type: string
+          example: golang/go
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        repository:
+          type: string
+        is_active:
+          type: boolean
