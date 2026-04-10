@@ -81,9 +81,27 @@ docker compose up --build
 npm test      # Запуск Unit-тестів
 npm run lint  # Перевірка лінтером
 ```
+---
+## How I tested
+
+Сервіс перевірявся наступними способами:
+
+- Swagger UI (`/docs`)
+- PowerShell / curl запити
+- ручний запуск scanner (`/scanner/run`)
+- перевірка email через MailHog (`http://localhost:8025`)
+- перегляд логів контейнера (`docker compose logs -f app`)
+
+Було перевірено:
+- створення підписки
+- отримання списку підписок
+- валідація некоректного repo (400)
+- неіснуючий repo (404)
+- робота scanner
+- відправка email при новому релізі
 ### Доступ до сервісів після запуску:
 - **API / UI:** `http://localhost:3000`
 - **Swagger:** `http://localhost:3000/docs`
 - **Перегляд листів (MailHog):** `http://localhost:8025`
 ---
-#### *Developed as a technical task for Genesis*
+#### *Developed as a technical task for Genesis Software Engineering School.*
